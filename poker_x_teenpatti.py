@@ -35,23 +35,40 @@ def generate_deck(suits, value, mydeck = None):
 print(generate_deck(suits,value),end = "\n\n")
 
 
-def poker_x_teen_patti(deck,cards_in_hand):
-    
+def poker_x_teen_patti(deck: list,cards_in_hand: int) -> str:
+    '''
+    creates hands, call s show function and returns results
+    # Input: 
+        deck: The list of cards of deck 
+        cards_in_hand: total number of cards each player should have.
+    # Returns:
+        Returns result i.e. string value contain the player won
+    '''
     set1 = []
     set2 = []
     print('Cards in hand:',cards_in_hand)
     random.shuffle(deck)
-    # print(deck)
     for _ in range(0,cards_in_hand):
         set1.append(deck.pop())
         set2.append(deck.pop())
     print("Remaining Deck:",deck,"\n lenght: ",len(deck))
     print("Player 1 Hand:",set1)
     print("Player 2 Hand:",set2)
-    show(set1, set2)
+    result  = show(set1, set2)
+    return result
 
-def show(set1,set2):
-    
+def show(set1: list,set2: list) -> str:
+    '''
+    call process function which returns a tuple, this function analyzes that tuple 
+    to figure out who won.
+    # input: 
+        set1 : List of cards player 1 is having
+        set2 : List of cards player 2 is having
+    # Returns:
+        This function returns a string which indicated which plaeyr won i.e. 0 for a draw, 
+        1 for player 1 won and 2 for player 2 won.
+    '''
+
     a,b = process(set1)
     c,d = process(set2)
     print("Player 1 hand rating:",a,b)
@@ -73,25 +90,30 @@ def show(set1,set2):
             print("It is a draw!!")
             return '0'
 
-def process(set1: list):
+def process(set1: list) -> tuple:
+    '''
+    This function takes in list as an input, and  validates if over various possible outcomes and 
+    then returns a tuple containing the output and a corresonding element that will help in segregating in case of draw. For more detailed algorithm
+    please check the readme file.
+    # Input: 
+        set1: list  of transformed hand
+    # Returns:
+        tuple: first element is the value in which the hand landed. 2 element is to help the show function to come to a conclusion in case of draw
+    '''
     value_set_list = []
     suit_set_list = []
     for _ in set1:
         value,suit = _.split()
         value_set_list.append(value)
         suit_set_list.append(suit)
-    # print("suit_set_list:",suit_set_list)
-    # print("value_set_list:",value_set_list)
     color_check = check_for_color(suit_set_list)
     value_set_list = transform_value_list(value_set_list)
-    # print("value_set_list:",value_set_list)
     sequence_check = check_for_number_sequence(value_set_list)
     print(color_check, sequence_check)
     if color_check == True:
         if sequence_check == True:
             x =  str(",".join(map(str,sorted(value_set_list,reverse = True))))
             print(x)
-            # print(sorted(value_set_list,reverse = True))
             if len(value_set_list) == 5:
                 if str(",".join(map(str,sorted(value_set_list,reverse = True)))) == "14,13,12,11,10":
                     return 1,14
@@ -160,6 +182,13 @@ def process(set1: list):
                     return 10,max(value_set_list)
                 
 def transform_value_list(value_set_list:list)->list:
+    '''
+    This function converts the list to integer format and also  converts values liek aces,etc to its numeric form
+    # Input
+        value_set_list: List of cards without suits. 
+    # Returns
+        Returns a list of card converted to numeric datatype.
+    '''
     for i in range(len(value_set_list)):
         if value_set_list[i]=='jack':
             value_set_list[i] = 11
@@ -171,14 +200,34 @@ def transform_value_list(value_set_list:list)->list:
             value_set_list[i] = 14
     return list(map(lambda x: int(x),value_set_list))
 
-def check_for_color(suit_set_list: list):
+def check_for_color(suit_set_list: list) -> bool:
+    '''
+    This function checks if the list contains the suits of the hands are all same or not
+    # Input
+        suit_set_list: list of suits of cards that a player is holding
+    # Returns
+        It returns a bool value which says whether they are of same color or not
+    '''
     if len(set(suit_set_list)) == 1:
         return True
     else:
         return False
 
-def check_for_number_sequence(value_set_list:list):
+def check_for_number_sequence(value_set_list:list) -> bool:
+    '''
+    This function checks if the list caontaining all numeric value of card are in sequence
+    # Input:
+        value_set_list: List containing all the numeric value of cards
+    # Output:
+        It returns a bool value indicating whether they are in sequence or not.
+    '''
+    print(sorted(value_set_list))
+    print(list(range(min(value_set_list),max(value_set_list)+1)))
     return sorted(value_set_list) == list(range(min(value_set_list),max(value_set_list)+1))
 
-cards_in_hand = random.choice([3,4,5])
-poker_x_teen_patti(test_deck,cards_in_hand)
+# set1 = ['9 hearts', 'king clubs', 'queen spades','jack diamonds','10 hearts']
+# set2 = ['7 hearts', '7 diamonds', '7 spades','7 hearts','10 spades']
+# show(set1,set2)
+set1 = ['ace hearts', 'king clubs', 'queen hearts']
+set2 = ['9 spades', 'ace diamonds', 'queen spades']
+show(set1,set2)
